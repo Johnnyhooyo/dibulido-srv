@@ -1,0 +1,25 @@
+port: 8080
+app: dibu_srv
+env: DEV
+gorm: # 这里配置的数据库需要兼容 mysql、postgres 的方言
+  config:
+    host: 0.0.0.0  # ip
+    port: 3306
+    username: root
+    password: password
+    config: parseTime=true
+    db_name: dibu_config
+  data:
+    host: 0.0.0.0  # ip
+    port: 3306
+    username: root
+    password: pssword
+    config: parseTime=true
+    db_name: dibu_data
+jwt:
+  expired_minute: 30
+  private_path: './conf/private.key'
+  public_path: './conf/public.key'
+# casbin configuration
+casbin:
+  model_path: './conf/rbac_model.conf'

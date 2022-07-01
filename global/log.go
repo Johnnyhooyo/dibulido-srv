@@ -1,9 +1,9 @@
-package log
+package global
 
 import (
-    "dibulido-srv/global"
     "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
+    "log"
     "os"
     "path/filepath"
     "sync"
@@ -14,16 +14,15 @@ import (
 
 // Options 日志配置参数
 type Options struct {
-    LogFileDir    string `json:"logFileDir" yaml:"logFileDir"` // 日志文件路径
-    AppName       string `json:"appName" yaml:"appName"`       // 日志文件前缀
-    ErrorFileName string `json:"errorFileName" yaml:"errorFileName"`
-    WarnFileName  string `json:"warnFileName" yaml:"warnFileName"`
-    InfoFileName  string `json:"infoFileName" yaml:"infoFileName"`
-    DebugFileName string `json:"debugFileName" yaml:"debugFileName"`
-    MaxSize       int    `json:"maxSize" yaml:"maxSize"`       // 单个文件最大存储量 MB
-    MaxAge        int    `json:"maxAge" yaml:"maxAge"`         // 文件最多保存多少天
-    MaxBackups    int    `json:"maxBackups" yaml:"maxBackups"` // 文件最多爆粗那个书
-    Compress      bool   `json:"compress" yaml:"compress"`     // 文件是否压缩
+    LogFileDir    string `mapstructure:"dir" json:"dir" yaml:"dir"` // 日志文件路径
+    ErrorFileName string `mapstructure:"err_file_name" json:"ErrorFileName" yaml:"err_file_name"`
+    WarnFileName  string `mapstructure:"warn_file_name" json:"warnFileName" yaml:"warn_file_name"`
+    InfoFileName  string `mapstructure:"info_file_name" json:"infoFileName" yaml:"info_file_name"`
+    DebugFileName string `mapstructure:"debug_file_name" json:"debugFileName" yaml:"debug_file_name"`
+    MaxSize       int    `mapstructure:"max_size" json:"maxSize" yaml:"max_size"`          // 单个文件最大存储量 MB
+    MaxAge        int    `mapstructure:"max_age" json:"maxAge" yaml:"max_age"`             // 文件最多保存多少天
+    MaxBackups    int    `mapstructure:"max_backups" json:"maxBackups" yaml:"max_backups"` // 文件最多爆粗那个书
+    Compress      bool   `mapstructure:"compress" json:"compress" yaml:"compress"`         // 文件是否压缩
     zap.Config
 }
 
@@ -42,7 +41,7 @@ var (
 // 在每一微秒和每一次内存分配都很重要的上下文中，使用Logger。它甚至比SugaredLogger更快，内存分配次数也更少，但它只支持强类型的结构化日志记录。
 func InitLog(conf ...*Options) {
     Log = &Logger{
-        Opts: &global.Config.LoggerConfig,
+        Opts: &ProjectConfig.LoggerConfig,
     }
 
     Log.Lock()
@@ -75,13 +74,16 @@ func (l *Logger) init() {
     var err error
     myLogger, err := l.zapConfig.Build(l.cores())
     if err != nil {
-        panic(err)
+        log.Fatalln("日志初始化失败:", err.Error())
     }
     l.SugaredLogger = myLogger.Sugar()
     defer l.SugaredLogger.Sync()
 }
 
 func (l *Logger) loadCfg() {
+    if ProjectConfig.Environment != "" {
+        l.Opts.Development = ProjectConfig.Environment == EnvDev
+    }
     if l.Opts.Development {
         l.zapConfig = zap.NewDevelopmentConfig()
         l.zapConfig.EncoderConfig.EncodeTime = timeEncoder
@@ -100,8 +102,8 @@ func (l *Logger) loadCfg() {
         l.Opts.LogFileDir, _ = filepath.Abs(filepath.Dir(filepath.Join(".")))
         l.Opts.LogFileDir += sp + "logs" + sp
     }
-    if l.Opts.AppName == "" {
-        l.Opts.AppName = "app"
+    if ProjectConfig.AppName == "" {
+        ProjectConfig.AppName = "app"
     }
     if l.Opts.ErrorFileName == "" {
         l.Opts.ErrorFileName = "error.log"
@@ -131,7 +133,7 @@ func (l *Logger) loadCfg() {
 func (l *Logger) setSyncers() {
     f := func(fN string) zapcore.WriteSyncer {
         return zapcore.AddSync(&lumberjack.Logger{
-            Filename:   l.Opts.LogFileDir + sp + l.Opts.AppName + "-" + fN,
+            Filename:   l.Opts.LogFileDir + sp + ProjectConfig.AppName + "-" + fN,
             MaxSize:    l.Opts.MaxSize,
             MaxBackups: l.Opts.MaxBackups,
             MaxAge:     l.Opts.MaxAge,
@@ -172,7 +174,7 @@ func (l *Logger) cores() zap.Option {
     debugPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
         return lvl == zapcore.DebugLevel && zapcore.DebugLevel-l.zapConfig.Level.Level() > -1
     })
-    field := zap.String("ip", global.ServerIP()) // 添加日志发生机器IP
+    field := zap.String("ip", ServerIP()) // 添加日志发生机器IP
     cores := []zapcore.Core{
         zapcore.NewCore(fileEncoder, errWS, errPriority).With([]zap.Field{field}),
         zapcore.NewCore(fileEncoder, warnWS, warnPriority).With([]zap.Field{field}),

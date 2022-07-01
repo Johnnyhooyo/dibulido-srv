@@ -1,9 +1,14 @@
-package v1
+package router
 
-import "dibulido-srv/api/router/beckend"
+import (
+    "dibulido-srv/api/router/backend"
+    "dibulido-srv/api/router/manage"
+)
 
-type RouterGroup struct {
-    Backend beckend.RouterGroup
+// BaseRouterGroup 基础路由集合
+type BaseRouterGroup struct {
+    Backend backend.RouterGroup
+    Manage  manage.RouterGroup
 }
 
-var RouterGroupApp = new(RouterGroup)
+var BaseRouterGroupApp = new(BaseRouterGroup)

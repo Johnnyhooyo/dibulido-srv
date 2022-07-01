@@ -1,4 +1,255 @@
+basePath: /
+definitions:
+  common.UserRoleInfo:
+    properties:
+      roleIDs:
+        description: 'min size: 1'
+        items:
+          type: string
+        type: array
+      userID:
+        type: string
+    required:
+    - roleIDs
+    - userID
+    type: object
+  req.LoginDto:
+    properties:
+      password:
+        description: 'max length: 32'
+        type: string
+      userName:
+        description: 'max length: 32'
+        type: string
+    required:
+    - password
+    - userName
+    type: object
+  req.UserCloseDto:
+    properties:
+      userID:
+        type: string
+    required:
+    - userID
+    type: object
+  req.UserCreateDto:
+    properties:
+      email:
+        description: 'max length: 64'
+        type: string
+      nickName:
+        description: 'max length: 64'
+        type: string
+      password:
+        description: 'max length: 32'
+        type: string
+      phone:
+        description: 'max length: 20'
+        type: string
+      userName:
+        description: 'max length: 32'
+        type: string
+    required:
+    - password
+    - userName
+    type: object
+  req.UserUpdateDto:
+    properties:
+      email:
+        description: 'max length: 64'
+        type: string
+      nickName:
+        description: 'max length: 64'
+        type: string
+      password:
+        description: 'max length: 32'
+        type: string
+      phone:
+        description: 'max length: 20'
+        type: string
+      userID:
+        type: string
+      userName:
+        description: 'max length: 32'
+        type: string
+    required:
+    - userID
+    type: object
+  response.Response:
+    properties:
+      code:
+        description: 结果码
+        type: integer
+      data:
+        description: 结果数据
+      msg:
+        description: 结果描述
+        type: string
+    type: object
+host: localhost:8080
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: 359332997@qq.com
+    name: dibulido
+  description: This is a learning serve
+  license:
+    name: MIT License
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: dibulido personally
+  title: dibulido_srv API
+  version: "1.0"
+paths:
+  /health/ping:
+    get:
+      responses:
+        "200":
+          description: pong
+      summary: 健康检查
+      tags:
+      - backends
+  /log/login:
+    post:
+      description: 登陆接口
+      parameters:
+      - description: 用户登陆参数
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/req.LoginDto'
+      responses:
+        "200":
+          description: 登陆成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      tags:
+      - manage
+  /log/logout:
+    post:
+      description: 登出接口
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - manage
+  /pms/grant:
+    post:
+      description: 给用户授权角色
+      parameters:
+      - description: 用户权限
+        in: body
+        name: userRole
+        required: true
+        schema:
+          $ref: '#/definitions/common.UserRoleInfo'
+      responses:
+        "200":
+          description: 操作成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - manage
+  /pms/query:
+    get:
+      description: 获取用户已授权角色
+      parameters:
+      - description: 用户ID
+        in: query
+        name: userID
+        required: true
+        type: string
+      responses:
+        "200":
+          description: 操作成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - manage
+  /pms/remove:
+    post:
+      description: 取消用户已授权角色
+      parameters:
+      - description: 取消用户授权
+        in: body
+        name: userRole
+        required: true
+        schema:
+          $ref: '#/definitions/common.UserRoleInfo'
+      responses:
+        "200":
+          description: 操作成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - manage
+  /user/close:
+    post:
+      description: 注销账号
+      parameters:
+      - description: 用户ID
+        in: body
+        name: userClose
+        required: true
+        schema:
+          $ref: '#/definitions/req.UserCloseDto'
+      responses:
+        "200":
+          description: 注销成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - manage
+  /user/modify:
+    post:
+      description: 用户信息变更
+      parameters:
+      - description: 用户参数
+        in: body
+        name: userUpdate
+        required: true
+        schema:
+          $ref: '#/definitions/req.UserUpdateDto'
+      responses:
+        "200":
+          description: 修改成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - ApiKeyAuth: []
+      tags:
+      - manage
+  /user/register:
+    post:
+      description: 注册新用户接口
+      parameters:
+      - description: 用户参数
+        in: body
+        name: userCreate
+        required: true
+        schema:
+          $ref: '#/definitions/req.UserCreateDto'
+      responses:
+        "200":
+          description: 注册用户成功
+          schema:
+            $ref: '#/definitions/response.Response'
+      tags:
+      - manage
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: x-Authorization
+    type: apiKey
 swagger: "2.0"

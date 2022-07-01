@@ -1,0 +1,44 @@
+v1 202206
+1. DB初始化
+create database if not exists dibu_config;
+use dibu_config;
+drop table if exists `d_user_base_info`;
+create table if not exists `d_user_base_info` (
+    `id` bigint NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+    `user_id` varchar(64) NOT NULL DEFAULT '' COMMENT '用户ID',
+    `user_name` varchar(32) NOT NULL DEFAULT '' COMMENT '用户名称',
+    `password` varchar(256) NOT NULL DEFAULT '' COMMENT '登陆密码 加密后',
+    `nick_name` varchar(64) NOT NULL DEFAULT '' COMMENT '用户昵称',
+    `phone` varchar(20) NOT NULL DEFAULT '' COMMENT '电话号',
+    `email` varchar(64) NOT NULL DEFAULT '' COMMENT '邮箱',
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+    `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '信息最新变更时间',
+    `deleted_at` timestamp NULL COMMENT '删除时间',
+    PRIMARY KEY (`id`),
+    unique key (`user_id`),
+    unique key (`user_name`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='基础用户信息表';
+
+drop table if exists `casbin_rule`;
+create table if not exists `casbin_rule` (
+    `id` bigint NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+    `ptype` varchar(100) NOT NULL DEFAULT '' COMMENT 'p g ',
+    `v0` varchar(100) NOT NULL DEFAULT '' COMMENT '列0',
+    `v1` varchar(100) NOT NULL DEFAULT '' COMMENT '列1',
+    `v2` varchar(100) NOT NULL DEFAULT '' COMMENT '列2',
+    `v3` varchar(100) NOT NULL DEFAULT '' COMMENT '列3',
+    `v4` varchar(100) NOT NULL DEFAULT '' COMMENT '列4',
+    `v5` varchar(100) NOT NULL DEFAULT '' COMMENT '列5',
+    PRIMARY KEY (`id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='权限表';
+
+// 初始化所有接口的权限
+insert into `casbin_rule` (`ptype`, `v0`, `v1`, `v2`) values
+('g', '9e789586-93f3-406a-8d80-787d87cfe239', 'root', ''),
+('g', 'root', 'guest', ''),
+('p', 'root', '/pms/grant', 'POST'),
+('p', 'root', '/pms/query', 'GET'),
+('p', 'root', '/pms/remove', 'POST'),
+('p', 'root', '/user/close', 'POST'),
+('p', 'root', '/user/modify', 'POST')
+;

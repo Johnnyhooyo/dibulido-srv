@@ -1,7 +1,399 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is a learning serve",
+        "title": "dibulido_srv API",
+        "termsOfService": "dibulido personally",
+        "contact": {
+            "name": "dibulido",
+            "email": "359332997@qq.com"
+        },
+        "license": {
+            "name": "MIT License",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
-    "paths": {}
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/health/ping": {
+            "get": {
+                "tags": [
+                    "backends"
+                ],
+                "summary": "健康检查",
+                "responses": {
+                    "200": {
+                        "description": "pong"
+                    }
+                }
+            }
+        },
+        "/log/login": {
+            "post": {
+                "description": "登陆接口",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "description": "用户登陆参数",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.LoginDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登陆成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/log/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "登出接口",
+                "tags": [
+                    "manage"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登出成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/pms/grant": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "给用户授权角色",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "description": "用户权限",
+                        "name": "userRole",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/common.UserRoleInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "操作成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/pms/query": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "获取用户已授权角色",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "操作成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/pms/remove": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "取消用户已授权角色",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "description": "取消用户授权",
+                        "name": "userRole",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/common.UserRoleInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "操作成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/close": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "注销账号",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "description": "用户ID",
+                        "name": "userClose",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UserCloseDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "注销成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/modify": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户信息变更",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "description": "用户参数",
+                        "name": "userUpdate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UserUpdateDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "修改成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "description": "注册新用户接口",
+                "tags": [
+                    "manage"
+                ],
+                "parameters": [
+                    {
+                        "description": "用户参数",
+                        "name": "userCreate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/req.UserCreateDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "注册用户成功",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "common.UserRoleInfo": {
+            "type": "object",
+            "required": [
+                "roleIDs",
+                "userID"
+            ],
+            "properties": {
+                "roleIDs": {
+                    "description": "min size: 1",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.LoginDto": {
+            "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "password": {
+                    "description": "max length: 32",
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "max length: 32",
+                    "type": "string"
+                }
+            }
+        },
+        "req.UserCloseDto": {
+            "type": "object",
+            "required": [
+                "userID"
+            ],
+            "properties": {
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "req.UserCreateDto": {
+            "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "email": {
+                    "description": "max length: 64",
+                    "type": "string"
+                },
+                "nickName": {
+                    "description": "max length: 64",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "max length: 32",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "max length: 20",
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "max length: 32",
+                    "type": "string"
+                }
+            }
+        },
+        "req.UserUpdateDto": {
+            "type": "object",
+            "required": [
+                "userID"
+            ],
+            "properties": {
+                "email": {
+                    "description": "max length: 64",
+                    "type": "string"
+                },
+                "nickName": {
+                    "description": "max length: 64",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "max length: 32",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "max length: 20",
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "max length: 32",
+                    "type": "string"
+                }
+            }
+        },
+        "response.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "结果码",
+                    "type": "integer"
+                },
+                "data": {
+                    "description": "结果数据"
+                },
+                "msg": {
+                    "description": "结果描述",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "x-Authorization",
+            "in": "header"
+        }
+    }
 }

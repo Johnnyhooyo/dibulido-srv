@@ -1,5 +1,8 @@
-package beckend
+package backend
 
+// RouterGroup backends的路由集合
 type RouterGroup struct {
-    BackendRouter
+    DocRouter
+    PPRofRouter
+    HealthRouter
 }

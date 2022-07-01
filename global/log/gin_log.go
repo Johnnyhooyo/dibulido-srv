@@ -1,27 +1,32 @@
-package global
+package log
 
 import (
+    "dibulido-srv/global"
     "github.com/gin-gonic/gin"
+    "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
-    "strconv"
 )
 
 // 在gin.Context中日志对象的key
-const loggerKey = iota
+const loggerKey = "ginLogger"
 
-// NewContent 给gin content设置新的值
-func NewContent(ctx *gin.Context, fields ...zapcore.Field) {
-    ctx.Set(strconv.Itoa(loggerKey), WithContent(ctx).With(fields))
+// NewContext 给gin content设置新的值
+func NewContext(ctx *gin.Context, fields ...zapcore.Field) {
+    log := WithContext(ctx)
+    for _, field := range fields {
+        log = log.With(field)
+    }
+    ctx.Set(loggerKey, log)
 }
 
-// WithContent 获取对应gin context的Logger 如果不存在获取的是全局Logger
-func WithContent(ctx *gin.Context) *Logger {
+// WithContext 获取对应gin context的SugaredLogger 如果不存在获取的是全局SugaredLogger
+func WithContext(ctx *gin.Context) *zap.SugaredLogger {
     if ctx == nil {
-        return Log
+        return global.Log.SugaredLogger
     }
-    log, _ := ctx.Get(strconv.Itoa(loggerKey))
-    if ctxLogger, ok := log.(*Logger); ok {
+    log, _ := ctx.Get(loggerKey)
+    if ctxLogger, ok := log.(*zap.SugaredLogger); ok {
         return ctxLogger
     }
-    return Log
+    return global.Log.SugaredLogger
 }

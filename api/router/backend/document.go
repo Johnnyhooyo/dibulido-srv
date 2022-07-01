@@ -1,31 +1,25 @@
-package beckend
+package backend
 
 import (
+    "dibulido-srv/docs"
     "dibulido-srv/middleware"
-    "github.com/gin-contrib/pprof"
     "github.com/gin-gonic/gin"
     swaggerFiles "github.com/swaggo/files"
     ginSwagger "github.com/swaggo/gin-swagger"
-    "github.com/swaggo/swag/example/basic/docs"
 )
 
-// BackendRouter 后台操作路由
-type BackendRouter struct{}
+// DocRouter 文档路由
+type DocRouter struct{}
 
-// InitBackendRouter 初始化后台操作路由
-func (s *BackendRouter) InitBackendRouter(Router *gin.RouterGroup) {
-    backendRouter := Router.Group("backend")
+// InitDocRouter 初始化文档路由
+func (s *DocRouter) InitDocRouter(Router *gin.RouterGroup) {
+    backendRouter := Router.Group("doc")
     {
-        // swagger 路由 需要登陆后查看 todo middleware替换成登陆
-        // swagger 路径： /dibulido/backend/swagger/index.html
+        // swagger路由 需要登陆后查看
+        // swagger路径： /doc/swagger/index.html
         swaggerRouter := backendRouter.Use(middleware.TraceLoggerMiddleware())
-        docs.SwaggerInfo.BasePath = "/dibulido/backend"
+        // 如果swagger报错500 很可能是这里路径不对
+        docs.SwaggerInfo.BasePath = "/"
         swaggerRouter.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
     }
-    {
-        // 注册pprof性能分析组件 todo 这里看下是否增加一个权限中间件 不能随便访问
-        // pprof 路径： /dibulido/backend/debug/pprof
-        pprof.RouteRegister(backendRouter)
-    }
-
 }

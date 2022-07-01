@@ -1,1 +1,2 @@
 {"L":"INFO","T":"2022-06-30 20:37:00","C":"global/log.go:59","M":"[initLogger] zap plugin initializing completed","ip":"192.168.255.10"}
+{"L":"INFO","T":"2022-06-30 20:37:16","C":"global/log.go:59","M":"[initLogger] zap plugin initializing completed","ip":"192.168.255.10"}
