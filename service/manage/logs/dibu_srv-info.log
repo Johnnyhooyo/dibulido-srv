@@ -1,2 +1,0 @@
-{"L":"INFO","T":"2022-07-01 14:32:05","C":"global/log.go:59","M":"[initLogger] zap plugin initializing completed","ip":"192.168.255.10"}
-{"L":"INFO","T":"2022-07-01 14:32:05","C":"global/gorm.go:32","M":"非PROD环境，日志级别设置为info","ip":"192.168.255.10"}
